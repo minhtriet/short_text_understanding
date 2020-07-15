@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { process } from './nlp';
 import './style.css';
 
 
@@ -27,3 +28,4 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+process();
