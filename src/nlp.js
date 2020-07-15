@@ -1,27 +1,33 @@
+const WDK = require('wikibase-sdk');
+
 // singleton query builder
-export default class QueryBuilder {
-
+class QueryBuilder {
   static instance;
-	static const base_url_address = "https://concept.research.microsoft.com/api/Concept/"
-	static const base_url = new URL(base_url_address);
-	static const result_number = 5;
-
-  constructor(){
-    if(instance){
-      return instance;
+  static wdk;
+  constructor() {
+    if (this.instance) {
+      return this.instance;
     }
-
+    QueryBuilder.wdk = WDK({
+      instance: 'https://www.wikidata.org',
+      sparqlEndpoint: 'https://query.wikidata.org/sparql'
+    });
     this.instance = this;
   }
-	
-	generateQuery = (token) => {
-		return URL(base_url, "ScoreByProb?instance={token}&topK={this.result_number}")
-	}	
+
+  generateURL = (token) => {
+    console.log(QueryBuilder.wdk);
+    return QueryBuilder.wdk.searchEntities(token);
+  }
 }
 
+let queryBuilder = new QueryBuilder();
 export const process = (query) => {
-  tokens = query.trim().split(' ');
-  for (token of tokens) {
-    xhr.open("GET", url(ba"ScoreByProb?instance=apple&topK=5se, true);
+  let tokens = query.trim().split(' ');
+  for (const token of tokens) {
+    fetch(queryBuilder.generateURL(token))
+      .then(function (response) {
+        console.log(response);
+      });
   }
 }
