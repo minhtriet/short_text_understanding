@@ -16,8 +16,10 @@ class QueryBuilder {
   }
 
   generateURL = (token) => {
-    console.log(QueryBuilder.wdk);
     return QueryBuilder.wdk.searchEntities(token);
+  }
+
+  getEntityInfo = (id) => {
   }
 }
 
@@ -26,8 +28,22 @@ export const process = (query) => {
   let tokens = query.trim().split(' ');
   for (const token of tokens) {
     fetch(queryBuilder.generateURL(token))
-      .then(function (response) {
-        console.log(response);
-      });
+      .then(response => response.json())
+      .then(debugger;)
+
   }
+}
+
+
+export const getProbability = (entityID) {
+  const url = wbk.getEntities({
+    ids: [ 'Q647268', 'Q771376', 'Q860998', 'Q965704' ],
+    language: 'en'
+  });
+
+  fetch(url)
+    .then(response => response.json())
+    .then(wbk.parse.wd.entities)
+    .then(entities => // do your thing with those entities data)
+
 }
