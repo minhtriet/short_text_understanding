@@ -15,18 +15,15 @@ class NERD:
             'type': 'item', 
             'origin': '*'}
 
-    async def fetch(session, url):
-        async with session.get(url) as response:
-            return await response.text()
 
     async def get_info(query):
+        params = urllib.parse.urlencode({**NERD.params_dict, 'search': query})
         async with aiohttp.ClientSession() as session:
-            params = urllib.parse.urlencode({**NERD.params_dict, 'search': query})
-            html = await NERD.fetch(session, NERD.base_url % params)
-            import pdb; pdb.set_trace()
-            print(html)
+            async with session.get(NERD.base_url % params, ssl=False) as response:
+                json = await response.text()
+            return response.status, json
 
 
     def __init__(self, name):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(NERD.get_info(name))
+        self.status, self.json = loop.run_until_complete(NERD.get_info(name))
