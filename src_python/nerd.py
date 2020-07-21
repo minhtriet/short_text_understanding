@@ -27,3 +27,9 @@ class NERD:
     def __init__(self, name):
         loop = asyncio.get_event_loop()
         self.status, self.json = loop.run_until_complete(NERD.get_info(name))
+
+
+    def disambiguate(self, before, after):
+        pass
+        
+
