@@ -1,6 +1,6 @@
 import aiohttp
 import asyncio
-
+import urllib
 # https://www.wikidata.org/w/api.php?action=wbsearchentities&search=apple&language=en&limit=20&continue=0&format=json&uselang=en&type=item&origin=*
 
 class NERD:
@@ -21,12 +21,12 @@ class NERD:
 
     async def get_info(query):
         async with aiohttp.ClientSession() as session:
-            params = urllib.parse.urlencode({**params_dict, 'search': query})
-            html = await fetch(session, base_url % params)
+            params = urllib.parse.urlencode({**NERD.params_dict, 'search': query})
+            html = await NERD.fetch(session, NERD.base_url % params)
             import pdb; pdb.set_trace()
             print(html)
 
 
-    def __init__(name):
+    def __init__(self, name):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(get_info(name))
+        loop.run_until_complete(NERD.get_info(name))
