@@ -40,7 +40,7 @@ class WikidataAdapter(base_adapter.EntityDatabase):
         loop = asyncio.get_event_loop()
         self.status, self.json = loop.run_until_complete(WikidataAdapter.get_info(WikidataAdapter.search_dict, {'search': self.entity}))
 
-    def get_probabilities(self):
+    def _get_probabilities(self):
         json_probabilities = [WikidataAdapter.get_info(WikidataAdapter.claims_pagelink_dict, {'gsrsearch': json_entity['title']}) for json_entity in self.json['search']]
         loop = asyncio.get_event_loop()
         result = loop.run_until_complete(asyncio.gather(*json_probabilities))
@@ -51,3 +51,11 @@ class WikidataAdapter(base_adapter.EntityDatabase):
         for flattened_response in flattened_responses:
             probabilities_dict[flattened_response['title']] = flattened_response['pageprops']['wb-sitelinks']
         return probabilities_dict
+
+    def to_entity_list(self):
+        probabilities_dict = self._get_probabilities()
+        denominator = sum(probabilities_dict.values()) * 1.
+        entities = [base_adapter.Entity(result['title'], 
+            probabilities_dict[result['title']] / denominator, result['description'], result['url']) for result in self.json['search']]
+        return entities
+

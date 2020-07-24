@@ -1,7 +1,9 @@
-from flair.data import Sentence
 from flair.models import SequenceTagger
 from flair.data import Sentence
 from flask import Flask
+import nerd
+import wikidata_adapter
+
 app = Flask(__name__)
 
 tagger = SequenceTagger.load('chunk')
@@ -27,4 +29,5 @@ def nerd(query):
     #{'text': 'buy', 'start_pos': 0, 'end_pos': 3, 'labels': [VP (0.9305)]}
     
     # nerd with wikidata
-    # class entity maybe
+    wikidata = wikidata_adapter(query)
+    entities = wikidata.to_entity_list()
