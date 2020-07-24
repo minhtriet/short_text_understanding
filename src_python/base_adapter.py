@@ -17,6 +17,6 @@ class EntityDatabase(ABC):
         return NotImplemented
 
     @abstractmethod
-    def get_probabilities(self) -> Dict:
+    def _get_probabilities(self) -> Dict:
         return NotImplemented
 
