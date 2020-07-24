@@ -1,4 +1,5 @@
 from base_adapter import Entity
+from typing import List
 
 class NERD:
 

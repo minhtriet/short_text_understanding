@@ -11,8 +11,8 @@ tagger = SequenceTagger.load('chunk')
 def api_home():
     return 42;
 
-@app.route('/nerd_api/v1', method='POST')
-def nerd(query):
+@app.route('/api/v1', methods=['GET'])
+def nerd():
     data = request.get_json(force=True)
     input_params = data['input']
     # chunking
@@ -29,5 +29,5 @@ def nerd(query):
     #{'text': 'buy', 'start_pos': 0, 'end_pos': 3, 'labels': [VP (0.9305)]}
     
     # nerd with wikidata
-    wikidata = wikidata_adapter(query)
+    wikidata = wikidata_adapter(data)
     entities = wikidata.to_entity_list()
