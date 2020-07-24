@@ -7,7 +7,9 @@ import './style.css';
 class TextBoxQuery extends React.Component {
   render() {
     return (
-      <input type='text'/>
+      <form action="/api/v1" method="GET">
+        <input type='text'/>
+      </form>
     );
   }
 }
