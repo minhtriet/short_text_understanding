@@ -1,23 +1,21 @@
 from flair.models import SequenceTagger
 from flair.data import Sentence
-from flask import Flask
-import nerd
+from flask import Flask, request, jsonify
+# import nerd
 import wikidata_adapter
 
 app = Flask(__name__)
 
 tagger = SequenceTagger.load('chunk')
+
 @app.route('/api')
 def api_home():
     return 42;
 
 @app.route('/api/v1', methods=['GET'])
 def nerd():
-    data = request.get_json(force=True)
-    input_params = data['input']
     # chunking
-    sentence = Sentence(input_params['sentence'])
-    print(f'this tagger predicts the {tagger.tag_type} tag')
+    sentence = Sentence(request.args.get('query'))
     tagger.predict(sentence)
     print(sentence)
     print('The following chunk tags are found:')

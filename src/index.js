@@ -7,8 +7,8 @@ import './style.css';
 class TextBoxQuery extends React.Component {
   render() {
     return (
-      <form action="/api/v1" method="GET">
-        <input type='text'/>
+      <form onSubmit="process"  action="api/v1" method="GET">
+        <input name='query' type='text'/>
       </form>
     );
   }
@@ -30,4 +30,3 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-process();
