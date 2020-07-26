@@ -24,8 +24,8 @@ def nerd():
         entity_dict = entity.to_dict()
         entity_dict['tag'] = entity.tag
         entity_dict['score'] = entity.score
-    #{'text': 'buy', 'start_pos': 0, 'end_pos': 3, 'labels': [VP (0.9305)]}
-    
-    # nerd with wikidata
-    wikidata = wikidata_adapter(data)
-    entities = wikidata.to_entity_list()
+        # {'text': 'buy', 'start_pos': 0, 'end_pos': 3, 'labels': [VP (0.9305)]}
+        # nerd with wikidata
+        wikidata = wikidata_adapter.WikidataAdapter(entity_dict['text'])
+        entities = wikidata.to_entity_list()
+    return jsonify(entities)

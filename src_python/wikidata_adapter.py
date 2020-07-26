@@ -37,25 +37,26 @@ class WikidataAdapter(base_adapter.EntityDatabase):
 
     def __init__(self, entity_name):
         self.entity = entity_name
-        loop = asyncio.get_event_loop()
-        self.status, self.json = loop.run_until_complete(WikidataAdapter.get_info(WikidataAdapter.search_dict, {'search': self.entity}))
+        self.status, self.json = asyncio.run(WikidataAdapter.get_info(WikidataAdapter.search_dict, {'search': self.entity}))
 
-    def _get_probabilities(self):
-        json_probabilities = [WikidataAdapter.get_info(WikidataAdapter.claims_pagelink_dict, {'gsrsearch': json_entity['title']}) for json_entity in self.json['search']]
-        loop = asyncio.get_event_loop()
-        result = loop.run_until_complete(asyncio.gather(*json_probabilities))
+    async def _get_probabilities(self):
+        json_probabilities = [WikidataAdapter.get_info(WikidataAdapter.claims_pagelink_dict,
+                                                       {'gsrsearch': json_entity['title']}) for json_entity in self.json['search']]
+        results = await asyncio.gather(*json_probabilities)
+        return results
+
+    def to_entity_list(self):
+        result = asyncio.run(self._get_probabilities())
         statuses, responses = zip(*result)
         responses_dict = [response['query']['pages'].values() for response in responses]
         flattened_responses = list(itertools.chain.from_iterable(responses_dict))
         probabilities_dict = {}
         for flattened_response in flattened_responses:
-            probabilities_dict[flattened_response['title']] = flattened_response['pageprops']['wb-sitelinks']
-        return probabilities_dict
-
-    def to_entity_list(self):
-        probabilities_dict = self._get_probabilities()
-        denominator = sum(probabilities_dict.values()) * 1.
-        entities = [base_adapter.Entity(result['title'], 
-            probabilities_dict[result['title']] / denominator, result['description'], result['url']) for result in self.json['search']]
+            probabilities_dict[flattened_response['title']] = flattened_response['pageprops']['wb-claims']
+        denominator = sum([float(x) for x in probabilities_dict.values()])
+        entities = [base_adapter.Entity(result['title'],
+                                        float(probabilities_dict[result['title']]) / denominator,
+                                        result['description'],
+                                        result['url']) for result in self.json['search']]
         return entities
 
