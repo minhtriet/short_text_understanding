@@ -12,7 +12,12 @@ class TextBoxQuery extends React.Component {
   }
 
   handleSubmit(event) {
-    fetch("/api/v1", this.state).then(response => console.log(response));
+    fetch(`/api/v1?query=${encodeURIComponent(this.state.query)}`)
+    .then(response => response.json())
+    .then(
+      (result) => {console.log(result)},
+      (error) => {console.log(error)}
+    );
     event.preventDefault();
   }
 
