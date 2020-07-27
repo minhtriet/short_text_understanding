@@ -43,16 +43,17 @@ class WikidataAdapter(base_adapter.EntityDatabase):
 
     def to_entity_list(self):
         result = asyncio.run(self._get_probabilities())
-        statuses, responses = zip(*result)
-        responses_dict = [response['query']['pages'].values() for response in responses]
-        flattened_responses = list(itertools.chain.from_iterable(responses_dict))
-        probabilities_dict = {}
-        for flattened_response in flattened_responses:
-            probabilities_dict[flattened_response['title']] = flattened_response['pageprops']['wb-claims']
-        denominator = sum([float(x) for x in probabilities_dict.values()])
-        entities = [base_adapter.Entity(result['title'],
-                                        float(probabilities_dict[result['title']]) / denominator,
-                                        result['description'],
-                                        result['url']) for result in self.json['search']]
-        return entities
-
+        if result:  # something is found on wikidata
+            statuses, responses = zip(*result)
+            responses_dict = [response['query']['pages'].values() for response in responses]
+            flattened_responses = list(itertools.chain.from_iterable(responses_dict))
+            probabilities_dict = {}
+            for flattened_response in flattened_responses:
+                probabilities_dict[flattened_response['title']] = flattened_response['pageprops']['wb-claims']
+            denominator = sum([float(x) for x in probabilities_dict.values()])
+            entities = [base_adapter.Entity(result['title'],
+                                            float(probabilities_dict[result['title']]) / denominator,
+                                            result['description'],
+                                            result['url']) for result in self.json['search']]
+            return entities
+        return None
