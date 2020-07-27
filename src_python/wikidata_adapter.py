@@ -19,7 +19,7 @@ class WikidataAdapter(base_adapter.EntityDatabase):
                    'origin': '*'}
     claims_pagelink_dict = {'action': 'query',
                             'prop': 'pageprops',
-                            'ppprop': 'wb-claims|wb-sitelinks',
+                            'ppprop': 'wb-claims', # 'ppprop': 'wb-claims|wb-sitelinks',
                             'generator': 'search',
                             'format': 'json',
                             'gsrlimit': 1}
