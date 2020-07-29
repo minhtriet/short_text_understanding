@@ -8,8 +8,8 @@ class Entity:
     probability: float
     description: str
     uri: str
-    start_pos: int
-    end_pos: int
+    start_pos: int = 0
+    end_pos: int = 0
 
 
 class EntityDatabase(ABC):
