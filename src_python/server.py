@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-
 import nerd
 app = Flask(__name__)
 
@@ -9,7 +8,7 @@ def api_home():
     return 42
 
 @app.route('/api/v1', methods=['GET'])
-def nerd():
+def name_entity_disambiguate():
     # chunking
     entities = nerd.disambiguate(request.args.get('query'))
     if entities:

@@ -9,7 +9,7 @@ from flair.models import SequenceTagger
 from flair.data import Sentence
 from typing import List
 from flair.embeddings import WordEmbeddings, FlairEmbeddings
-
+from scipy import special
 import numpy as np
 
 import sys
@@ -42,23 +42,26 @@ def disambiguate(query) -> List[Entity]:
             wikidata = wikidata_adapter.WikidataAdapter(entity.text)
             possible_entities = wikidata.to_entity_list()
             if possible_entities:
-                similarities = np.array([])
+                similarities = []
                 if effective_verb_embedding:
                     # reduce two arrays of embedding to a number of maximum similarity
                     for prob in possible_entities:
                         desc = Sentence(prob.description)
                         flair_embedding_forward.embed(desc)
-                        similarities.append(max([np.dot(effective_verb_embedding, token.embedding) for token in desc]))
-                    similarities /= sum(similarities)
+                        similarities.append(max([np.dot(token_prime.embedding, token.embedding) for token in desc for token_prime in effective_verb_embedding]))
+                    import pdb; pdb.set_trace()
+                    similarities = special.softmax(similarities)
                     # bayes rule
                     posteriors = similarities * [entity.probability for entity in possible_entities]
                     most_likely_index = np.argmax(posteriors)
                 else:
                     most_likely_index = np.argmax([entity.probability for entity in possible_entities])
+            possible_entities[most_likely_index].start_pos = entity.start_pos
+            possible_entities[most_likely_index].end_pos = entity.end_pos
             most_likely_entities.append(possible_entities[most_likely_index])
         if entity.tag == VERB_PHRASE_TAG:
-            effective_verb_embedding = flair_embedding_forward.embed(entity.text)
+            effective_verb_embedding = Sentence(entity.text)
+            flair_embedding_forward.embed(effective_verb_embedding)
     logging.log(logging.DEBUG, most_likely_entities)
-    most_likely_entities.append({'start_pos': entity.start_pos, 'end_pos': entity.end_pos, 'probs': possible_entities})
     return most_likely_entities if most_likely_entities else None
 
