@@ -6,7 +6,7 @@ import urllib
 import itertools
 # https://www.wikidata.org/w/api.php?action=query&format=json&prop=pageprops&generator=search&ppprop=wb-claims|wb-sitelinks&gsrsearch=Q89&gsrlimit=1
 # https://www.wikidata.org/w/api.php?action=wbsearchentities&search=apple&language=en&limit=20&continue=0&format=json&uselang=en&type=item&origin=*
-
+# https://www.wikidata.org/w/api.php?action=query&list=search&srsearch=apple&format=json&limit=4
 class WikidataAdapter(base_adapter.EntityDatabase):
     base_url = "https://www.wikidata.org/w/api.php?%s"
     search_dict = {'action': 'wbsearchentities',
