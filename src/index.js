@@ -28,7 +28,9 @@ class TextBoxQuery extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit} method="GET">
-        <input value={this.state.query} onChange={this.handleChange} type='text'/>
+        <div id='textbox_container'>
+          <input id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text'/>
+        </div>
       </form>
     );
   }
@@ -40,6 +42,7 @@ class App extends React.Component {
       <div>
       <TextBoxQuery />
       <div className="result"></div>
+      <mark> Jack </mark> is cool
       </div>
     );
   }
