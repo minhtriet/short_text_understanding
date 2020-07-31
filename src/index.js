@@ -31,7 +31,7 @@ class TextBoxQuery extends React.Component {
     return (
       <form onSubmit={this.handleSubmit} method="GET">
         <div id='textbox_container'>
-          <input id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text'/>
+          <input id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
         </div>
       </form>
     );
