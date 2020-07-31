@@ -6,17 +6,16 @@ import urllib
 import itertools
 # https://www.wikidata.org/w/api.php?action=query&format=json&prop=pageprops&generator=search&ppprop=wb-claims|wb-sitelinks&gsrsearch=Q89&gsrlimit=1
 # https://www.wikidata.org/w/api.php?action=wbsearchentities&search=apple&language=en&limit=20&continue=0&format=json&uselang=en&type=item&origin=*
-# https://www.wikidata.org/w/api.php?action=query&list=search&srsearch=apple&format=json&limit=4
+# https://www.wikidata.org/w/api.php?action=query&list=search&srsearch=harry%20potter&format=json&srlimit=4
 class WikidataAdapter(base_adapter.EntityDatabase):
+
+    MAX_RESULTS_NUMBER = base_adapter.EntityDatabase.MAX_RESULTS_NUMBER
+
     base_url = "https://www.wikidata.org/w/api.php?%s"
     search_dict = {'action': 'wbsearchentities',
-                   'language': 'en',
-                   'limit': 4,
-                   'continue': 0,
-                   'format': 'json',
-                   'uselang': 'en',
-                   'type': 'item',
-                   'origin': '*'}
+                   'list': 'search',
+                   'srlimit': MAX_RESULTS_NUMBER,
+                   'format': 'json',}
     claims_pagelink_dict = {'action': 'query',
                             'prop': 'pageprops',
                             'ppprop': 'wb-claims', # 'ppprop': 'wb-claims|wb-sitelinks',
@@ -33,7 +32,7 @@ class WikidataAdapter(base_adapter.EntityDatabase):
 
     def __init__(self, entity_name):
         self.entity = entity_name
-        self.status, self.json = asyncio.run(WikidataAdapter.get_info(WikidataAdapter.search_dict, {'search': self.entity}))
+        self.status, self.json = asyncio.run(WikidataAdapter.get_info(WikidataAdapter.search_dict, {'srsearch': self.entity}))
 
     async def _get_probabilities(self):
         json_probabilities = [WikidataAdapter.get_info(WikidataAdapter.claims_pagelink_dict,
@@ -42,6 +41,13 @@ class WikidataAdapter(base_adapter.EntityDatabase):
         return results
 
     def to_entity_list(self):
+        """
+
+        Returns
+        -------
+        total claims
+        detailed dict
+        """
         result = asyncio.run(self._get_probabilities())
         if result:  # something is found on wikidata
             statuses, responses = zip(*result)
@@ -53,7 +59,6 @@ class WikidataAdapter(base_adapter.EntityDatabase):
             denominator = sum([float(x) for x in probabilities_dict.values()])
             entities = [base_adapter.Entity(result['title'],
                                             float(probabilities_dict[result['title']]) / denominator,
-                                            result['description'],
-                                            result['url']) for result in self.json['search']]
-            return entities
-        return None
+                                            result['snippet']) for result in self.json['search'] if result['snippet']]
+            return denominator, entities
+        return 0, None
