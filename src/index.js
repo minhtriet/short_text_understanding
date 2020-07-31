@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './normalize.css';
+import './skeleton.css';
 import './style.css';
 
 
@@ -40,6 +42,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
+      <h1>nerd</h1>
       <TextBoxQuery />
       <div className="result"></div>
       <mark> Jack </mark> is cool

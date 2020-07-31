@@ -18,6 +18,13 @@ mark {
     padding-top: 3.84px;
 }
 
+.centered {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 #textbox_container {
     border-bottom-color: rgb(223, 225, 229);
     border-radius: 24px;
