@@ -7,6 +7,12 @@ def test_one_entity():
     assert len(result) == 1
     assert result[0].name == 'Q8337'  # Harry Potter the book
 
+def test_one_entity_with_noise():
+    result = nerd.disambiguate("thick harry potter book")
+    assert len(result) == 1
+    assert result[0].name == 'Q8337'  # Harry Potter the book
+
+@pytest.mark.skip(reason="done")
 def test_another_entity():
     result = nerd.disambiguate("watch harry potter")
     assert len(result) == 1
