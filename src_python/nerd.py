@@ -15,12 +15,11 @@ import numpy as np
 import sys
 import logging
 
-tagger = SequenceTagger.load('chunk')
-NOUN_PHRASE_TAG = 'NP'
-VERB_PHRASE_TAG = 'VP'
-tagger = SequenceTagger.load('pos')
+NOUN_TAG = 'NOUN'
+VERB_TAG = 'VERB'
+ADJ_TAG = 'ADJ'
 
-
+tagger = SequenceTagger.load('upos-fast')
 flair_embedding_forward = FlairEmbeddings('news-forward')
 flair_embedding_backward = FlairEmbeddings('news-backward')
 
@@ -31,11 +30,17 @@ handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
+def sentence_similarity(sent_1, sent_2) -> float:
+  if len(sent_1) == 0 or len(sent_2) == 0:
+    return 0
+  return max([np.dot(token_prime.embedding, token.embedding) 
+              for token in sent_1 for token_prime in sent_2])
+
+
 def disambiguate(query) -> List[Entity]:
     sentence = Sentence(query)
     tagger.predict(sentence)
     logging.log(logging.DEBUG, sentence)
-    print('The following chunk tags are found:')
     most_likely_entities = []
     effective_verb_embedding = ''
     for entity in sentence.get_spans('np'):
