@@ -79,24 +79,24 @@ def disambiguate(query) -> List[Entity]:
             if possible_entities:
                 # get possible entities
                 similarities = []
-                if effective_verb_embedding:
+                if preceding_part or succeeding_part:
                     # reduce two arrays of embedding to a number of maximum similarity
                     for prob in possible_entities:
                         desc = Sentence(prob.description)
                         flair_embedding_forward.embed(desc)
-                        similarities.append(max([np.dot(token_prime.embedding, token.embedding) for token in desc for token_prime in effective_verb_embedding]))
+                        best_sim = max(sentence_similarity(desc, preceding_part), sentence_similarity(desc, succeeding_part))
+                        similarities.append(best_sim)
                     similarities = special.softmax(similarities)
                     # bayes rule
                     posteriors = similarities * [entity.probability for entity in possible_entities]
                     most_likely_index = np.argmax(posteriors)
                 else:
                     most_likely_index = np.argmax([entity.probability for entity in possible_entities])
-            possible_entities[most_likely_index].start_pos = entity.start_pos
-            possible_entities[most_likely_index].end_pos = entity.end_pos
+            possible_entities[most_likely_index].start_pos = best_config[0]
+            possible_entities[most_likely_index].end_pos = best_config[1]
             most_likely_entities.append(possible_entities[most_likely_index])
-            if entity.tag == VERB_PHRASE_TAG:
-                effective_verb_embedding = Sentence(entity.text)
-                flair_embedding_forward.embed(effective_verb_embedding)
+        else:
+            token_index += 1
     logging.log(logging.DEBUG, most_likely_entities)
     return most_likely_entities if most_likely_entities else None
 
