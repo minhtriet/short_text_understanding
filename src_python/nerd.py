@@ -60,12 +60,12 @@ def disambiguate(query) -> List[Entity]:
                     sub_text = ' '.join(list(map(lambda x: x.text, sentence[start_index:end_index])))
                     wikidata = wikidata_adapter.WikidataAdapter(sub_text)
                     total_prob, possible_entities = wikidata.to_entity_list()
-                    if total_prob > biggest_probs:
+                    if possible_entities[0].probability > biggest_probs:   # only consider most relevant entity
                         biggest_probs = total_prob
-                        best_entities = possible_entities
                         best_config = (start_index, end_index)
             # use words around that subtext to gain more data for likelihood
-            if best_entities:
+            if possible_entities:
+                # get possible entities
                 similarities = []
                 if effective_verb_embedding:
                     # reduce two arrays of embedding to a number of maximum similarity
