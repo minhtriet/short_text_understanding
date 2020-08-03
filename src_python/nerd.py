@@ -42,17 +42,22 @@ def disambiguate(query) -> List[Entity]:
     tagger.predict(sentence)
     logging.log(logging.DEBUG, sentence)
     most_likely_entities = []
-    effective_verb_embedding = ''
-    for entity in sentence.get_spans('np'):
-        if entity.tag == NOUN_PHRASE_TAG:
-            print(entity)
-            biggest_probs = 0
-            best_config = (0, len(entity))
-            best_entities = None
-            # extract subtext with most claims
-            for start_index in range(1, len(entity) - 1):
-                for end_index in range(start_index+1, len(entity)):
-                    sub_text = ' '.join(list(map(lambda x: x.text, entity.tokens[start_index:end_index+1])))
+    trailing = 0
+    token_index = 0
+    total_prob, possible_entities = 0, None
+    while token_index < len(sentence.tokens):
+        token = sentence[token_index]
+        if token.get_tag('pos').value == NOUN_TAG:
+            for longest_token_index in range(token_index + 1, len(sentence.tokens)):
+                if sentence[longest_token_index].get_tag('pos').value != NOUN_TAG:
+                    break
+            biggest_probs = float('-inf')
+            best_config = (token_index, token_index)
+            possible_entities = None
+            # extract subtext with most claims in the database
+            for start_index in range(token_index, longest_token_index):
+                for end_index in range(start_index+1, longest_token_index + 1):
+                    sub_text = ' '.join(list(map(lambda x: x.text, sentence[start_index:end_index])))
                     wikidata = wikidata_adapter.WikidataAdapter(sub_text)
                     total_prob, possible_entities = wikidata.to_entity_list()
                     if total_prob > biggest_probs:
