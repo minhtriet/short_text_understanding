@@ -63,6 +63,18 @@ def disambiguate(query) -> List[Entity]:
                     if possible_entities[0].probability > biggest_probs:   # only consider most relevant entity
                         biggest_probs = total_prob
                         best_config = (start_index, end_index)
+            # found an entity!!!
+            # now what are the trailing tokens?
+            # the var `trailing` is from previous entity!
+            preceding_part = Sentence(' '.join(list(map(lambda x: x.text, sentence[trailing:best_config[0]]))))
+            flair_embedding_forward.embed(preceding_part)
+            # now updating `trailing`
+            for trailing in range(best_config[1], len(sentence)):
+                if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
+                    break
+            token_index = trailing + 1
+            succeeding_part = Sentence(' '.join(list(map(lambda x: x.text, sentence[best_config[1]+1:trailing+1]))))
+            flair_embedding_backward.embed(succeeding_part)
             # use words around that subtext to gain more data for likelihood
             if possible_entities:
                 # get possible entities
