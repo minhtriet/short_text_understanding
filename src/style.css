@@ -36,6 +36,7 @@ mark {
     border-left-width: 0px;
     border-right-width: 0px;
     border-top-width: 0px;
+    width: 600px;
     color: rgba(0, 0, 0, 0.87);
     display: flex;
     flex-basis: 100%;
