@@ -96,8 +96,8 @@ def disambiguate(query) -> List[Entity]:
                     most_likely_index = np.argmax(posteriors)
                 else:
                     most_likely_index = np.argmax([entity.probability for entity in possible_entities])
-            possible_entities[most_likely_index].start_pos = best_config[0]
-            possible_entities[most_likely_index].end_pos = best_config[1]
+            possible_entities[most_likely_index].start_pos = sentence[best_config[0]].start_pos
+            possible_entities[most_likely_index].end_pos = sentence[best_config[1]].end_pos
             most_likely_entities.append(possible_entities[most_likely_index])
         else:
             token_index += 1
