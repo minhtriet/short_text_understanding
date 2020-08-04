@@ -16,6 +16,7 @@ import sys
 import logging
 
 NOUN_TAG = 'NOUN'
+PROPN_TAG = 'PROPN'
 VERB_TAG = 'VERB'
 ADJ_TAG = 'ADJ'
 
@@ -47,10 +48,13 @@ def disambiguate(query) -> List[Entity]:
     total_prob, possible_entities = 0, None
     while token_index < len(sentence.tokens):
         token = sentence[token_index]
-        if token.get_tag('pos').value == NOUN_TAG:
-            for longest_token_index in range(token_index + 1, len(sentence.tokens)):
-                if sentence[longest_token_index].get_tag('pos').value != NOUN_TAG:
-                    break
+        if token.get_tag('pos').value in [NOUN_TAG, PROPN_TAG]:
+            if token_index == len(sentence) - 1:
+              longest_token_index = len(sentence)
+            else:
+              for longest_token_index in range(token_index + 1, len(sentence)):
+                  if sentence[longest_token_index].get_tag('pos').value != NOUN_TAG:
+                      break
             biggest_probs = float('-inf')
             best_config = (token_index, token_index)
             possible_entities = None
