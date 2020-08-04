@@ -4,11 +4,12 @@ import './normalize.css';
 import './skeleton.css';
 import './style.css';
 
+const e = React.createElement;
 
 class QueryForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {query: '', result: ''};
+    this.state = {query: ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -18,10 +19,25 @@ class QueryForm extends React.Component {
     .then(response => response.json())
     .then(
       (result) => {
+        let return_dom = [];
         if ('error' in result) {
-          this.setState({result: "No enitity found in your query"});
+          return_dom.push(result['error']);
+        } else {
+          let result_index = 0;
+          let i = 0;
+          while (i < this.state.query.length) {
+            if (result_index >= result.length || 
+              i !== result[result_index]['start_pos']) {    // ran out of result or still not reach a result yet
+              return_dom.push(this.state.query.charAt(i));
+              i++;
+            } else {
+              i = result[result_index]['end_pos'] + 1;
+              return_dom.push(e('Mark', null, this.state.query.slice(result[result_index]['start_pos'], result[result_index]['end_pos'])));
+              result_index += 1;
+            }
+          }
         }
-        console.log(result)
+        ReactDOM.render(return_dom, document.getElementById('result'))
       },
       (error) => {console.log(error)}
     );
@@ -38,8 +54,7 @@ class QueryForm extends React.Component {
         <form onSubmit={this.handleSubmit} method="GET">
               <input id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
         </form>
-        <div className="result">
-          {this.state.result}
+        <div id="result">
         </div>
       </div>
     );
