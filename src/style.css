@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
 
+
 div {
     font-family: 'Fira Sans', sans-serif;
 }
@@ -31,87 +32,18 @@ mark {
   transform: translate(-50%, -50%);
 }
 
-#textbox_container {
-    border-bottom-color: rgb(223, 225, 229);
-    border-radius: 24px;
-    border-width: 1px;
-    border-image-outset: 0;
-    border-image-repeat: stretch;
-    border-image-slice: 100%;
-    border-image-source: none;
-    border-image-width: 1;
-    border-left-color: rgb(223, 225, 229);
-    border-style: solid;
-    border-right-color: rgb(223, 225, 229);
-    border-right-width: 1px;
-    border-top-color: rgb(223, 225, 229);
-    box-shadow: none;
-    color: rgb(34, 34, 34);
-    display: flex;
-    font-family: arial, sans-serif;
-    font-size: 13px;
-    height: 44px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    width: 582px;
-}
-
 #textbox_query {
-    background-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0.87);
-    border-bottom-style: none;
-    border-bottom-width: 0px;
-    border-image-outset: 0;
-    border-image-repeat: stretch;
-    border-image-slice: 100%;
-    border-image-source: none;
-    border-image-width: 1;
-    border-left-color: rgba(0, 0, 0, 0.87);
-    border-left-style: none;
     border-left-width: 0px;
-    border-right-color: rgba(0, 0, 0, 0.87);
-    border-right-style: none;
     border-right-width: 0px;
-    border-top-color: rgba(0, 0, 0, 0.87);
-    border-top-style: none;
     border-top-width: 0px;
     color: rgba(0, 0, 0, 0.87);
     display: flex;
     flex-basis: 100%;
     flex-grow: 1;
     flex-shrink: 1;
-    font-family: arial, sans-serif;
-    font-feature-settings: normal;
-    font-kerning: auto;
-    font-language-override: normal;
     font-optical-sizing: auto;
     font-size: 16px;
-    font-size-adjust: none;
     font-stretch: 100%;
     font-style: normal;
-    font-variant: normal;
-    font-variant-alternates: normal;
-    font-variant-caps: normal;
-    font-variant-east-asian: normal;
-    font-variant-ligatures: normal;
-    font-variant-numeric: normal;
-    font-variant-position: normal;
-    font-variation-settings: normal;
-    font-weight: 400;
     height: 34px;
-    line-height: 34px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: -37px;
-    outline-color: rgba(0, 0, 0, 0.87);
-    outline-style: none;
-    outline-width: 0px;
-    overflow-wrap: break-word;
-    padding-bottom: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
 }
