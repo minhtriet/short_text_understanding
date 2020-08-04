@@ -5,6 +5,7 @@ import './skeleton.css';
 import './style.css';
 
 const e = React.createElement;
+const WIKIDATA_LINK = 'https://www.wikidata.org/wiki/';
 
 class QueryForm extends React.Component {
   constructor(props) {
@@ -32,7 +33,7 @@ class QueryForm extends React.Component {
               i++;
             } else {
               i = result[result_index]['end_pos'] + 1;
-              return_dom.push(e('Mark', null, this.state.query.slice(result[result_index]['start_pos'], result[result_index]['end_pos'])));
+              return_dom.push(e('a', {href: `${WIKIDATA_LINK}${result[result_index]['name']}`, key: result_index}, this.state.query.slice(result[result_index]['start_pos'], result[result_index]['end_pos'])));
               result_index += 1;
             }
           }
