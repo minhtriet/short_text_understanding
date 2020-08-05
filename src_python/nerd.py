@@ -53,19 +53,19 @@ def disambiguate(query) -> List[Entity]:
               longest_token_index = len(sentence)
             else:
               for longest_token_index in range(token_index + 1, len(sentence)):
-                  if sentence[longest_token_index].get_tag('pos').value != NOUN_TAG:
+                  if sentence[longest_token_index].get_tag('pos').value in [NOUN_TAG, PROPN_TAG]:
                       break
             biggest_probs = float('-inf')
             best_config = (token_index, token_index)
             possible_entities = None
             # extract subtext with most claims in the database
             for start_index in range(token_index, longest_token_index):
-                for end_index in range(start_index+1, longest_token_index + 1):
-                    sub_text = ' '.join(list(map(lambda x: x.text, sentence[start_index:end_index])))
+                for end_index in range(start_index, longest_token_index + 1):
+                    sub_text = ' '.join(list(map(lambda x: x.text, sentence[start_index:end_index+1])))  # end_index included
                     wikidata = wikidata_adapter.WikidataAdapter(sub_text)
                     total_prob, possible_entities = wikidata.to_entity_list()
                     if possible_entities[0].probability > biggest_probs:   # only consider most relevant entity
-                        biggest_probs = total_prob
+                        biggest_probs = possible_entities[0].probability
                         best_config = (start_index, end_index)
             # found an entity!!!
             # now what are the trailing tokens?
@@ -92,8 +92,9 @@ def disambiguate(query) -> List[Entity]:
                         similarities.append(best_sim)
                     similarities = special.softmax(similarities)
                     # bayes rule
-                    posteriors = similarities * [entity.probability for entity in possible_entities]
-                    most_likely_index = np.argmax(posteriors)
+                    # posteriors = similarities * [entity.probability for entity in possible_entities]
+                    # most_likely_index = np.argmax(posteriors)
+                    most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
                 else:
                     most_likely_index = np.argmax([entity.probability for entity in possible_entities])
             possible_entities[most_likely_index].start_pos = sentence[best_config[0]].start_pos
