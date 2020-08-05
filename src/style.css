@@ -6,6 +6,11 @@ div {
     font-family: 'Fira Sans', sans-serif;
 }
 
+.footnote {
+    font-size: 11px;
+    margin-left: 10px;
+}
+
 h1 {
     font-family: 'Montserrat', sans-serif;
     text-align: center;
