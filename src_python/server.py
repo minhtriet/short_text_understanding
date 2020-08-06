@@ -3,9 +3,9 @@ import nerd
 app = Flask(__name__)
 
 
-@app.route('/api')
+@app.route('/')
 def api_home():
-    return 42
+    return "42"
 
 @app.route('/api/v1', methods=['GET'])
 def name_entity_disambiguate():

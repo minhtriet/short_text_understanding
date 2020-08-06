@@ -1,7 +1,8 @@
-version: '3.7'
+version: '3.8'
 
 services:
    ner:
+       image: ner:prod
        command: gunicorn --bind 0.0.0.0:5000 server:app
        ports:
            - 5000:5000
