@@ -9,3 +9,4 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install -r requirements.txt
 
+ENV FLASK_ENV production

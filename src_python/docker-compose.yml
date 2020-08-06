@@ -4,5 +4,11 @@ services:
    ner:
        image: ner:prod
        command: gunicorn --bind 0.0.0.0:5000 server:app
+       expoe:
+           - 5000
+   nginx:
+       build: ./nginx
        ports:
-           - 5000:5000
+           - 1337:80
+       depends_on:
+           - ner
