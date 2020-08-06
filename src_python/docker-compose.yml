@@ -4,7 +4,7 @@ services:
    ner:
        image: ner:prod
        command: gunicorn --bind 0.0.0.0:5000 server:app
-       expoe:
+       expose:
            - 5000
    nginx:
        build: ./nginx
