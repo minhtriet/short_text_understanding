@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 import nerd
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "https://minhtriet.github.io/short_text_understanding/"}})
 
 
 @app.route('/')
