@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import './normalize.css';
 import './skeleton.css';
@@ -16,8 +17,8 @@ class QueryForm extends React.Component {
   }
 
   handleSubmit(event) {
-    window.history.pushState("", "", `api/v1/query=${this.state.query}`);
-    fetch(`/api/v1?query=${encodeURIComponent(this.state.query)}`)
+    window.history.pushState("", "", `?query=${this.state.query}`);
+    fetch(`http://${process.env.REACT_APP_SERVER_URL}/api/v1?query=${encodeURIComponent(this.state.query)}`)
     .then(response => response.json())
     .then(
       (result) => {
