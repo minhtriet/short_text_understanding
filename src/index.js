@@ -18,7 +18,7 @@ class QueryForm extends React.Component {
 
   handleSubmit(event) {
     window.history.pushState("", "", `?query=${this.state.query}`);
-    fetch(`${process.env.REACT_APP_SERVER_URL}/api/v1?query=${encodeURIComponent(this.state.query)}`)
+    fetch(`//${process.env.REACT_APP_SERVER_URL}/api/v1?query=${encodeURIComponent(this.state.query)}`)
     .then(response => response.json())
     .then(
       (result) => {
