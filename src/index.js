@@ -10,13 +10,17 @@ const WIKIDATA_LINK = 'https://www.wikidata.org/wiki/';
 class QueryForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {query: ''};
+    const urlParams = new URLSearchParams(window.location.search);
+    this.state = {query: urlParams.get('query') || ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    if (this.state.query) {
+      this.handleSubmit(new Event('submit'));
+    }
   }
 
   handleSubmit(event) {
-    window.history.pushState("", "", `api/v1/query=${this.state.query}`);
+    window.history.pushState(null, null, `?query=${encodeURIComponent(this.state.query)}`);
     fetch(`/api/v1?query=${encodeURIComponent(this.state.query)}`)
     .then(response => response.json())
     .then(
@@ -55,7 +59,7 @@ class QueryForm extends React.Component {
     return (
       <div>
         <form onSubmit={this.handleSubmit} method="GET">
-              <input id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
+              <input name="query" id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
         </form>
         <div id="result">
         </div>
