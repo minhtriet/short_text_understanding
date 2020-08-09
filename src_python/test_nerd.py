@@ -23,3 +23,9 @@ def test_consistency():
     result = nerd.disambiguate("read harry potter vs watch harry potter")
     assert len(result) == 2
     assert result[0].name == result_0[0].name and result[1].name == result_1[0].name
+
+
+def test_long_entity()
+    result = nerd.disambiguate('rage against the machine');
+    assert result[0].name == 'Q72092'
+

@@ -47,6 +47,7 @@ def disambiguate(query) -> List[Entity]:
     token_index = 0
     total_prob, possible_entities = 0, None
     while token_index < len(sentence.tokens):
+        # todo: change this to binary search, maybe to v2
         token = sentence[token_index]
         if token.get_tag('pos').value in [NOUN_TAG, PROPN_TAG]:
             if token_index == len(sentence) - 1:
@@ -63,10 +64,11 @@ def disambiguate(query) -> List[Entity]:
                 for end_index in range(start_index, longest_token_index + 1):
                     sub_text = ' '.join(list(map(lambda x: x.text, sentence[start_index:end_index+1])))  # end_index included
                     wikidata = wikidata_adapter.WikidataAdapter(sub_text)
-                    total_prob, possible_entities = wikidata.to_entity_list()
-                    if possible_entities[0].probability > biggest_probs:   # only consider most relevant entity
-                        biggest_probs = possible_entities[0].probability
+                    total_prob, temp_possible_entities = wikidata.to_entity_list()
+                    if temp_possible_entities and temp_possible_entities[0].probability > biggest_probs:   # only consider most relevant entity
+                        biggest_probs = temp_possible_entities[0].probability
                         best_config = (start_index, end_index)
+                        possible_entities = temp_possible_entities
             # found an entity!!!
             # now what are the trailing tokens?
             # the var `trailing` is from previous entity!
