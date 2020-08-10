@@ -45,6 +45,8 @@ class QueryForm extends React.Component {
       },
       (error) => {console.log(error)}
     );
+    const loading_dom = e('div', {className: 'centered lds-ellipsis'}, [e('div'), e('div'), e('div')]);
+    ReactDOM.render(loading_dom, document.getElementById('result'));
     event.preventDefault();
   }
 
@@ -65,6 +67,7 @@ class QueryForm extends React.Component {
               <input name="query" id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
         </form>
         <div id="result">
+          Try <a href='/?query=watch harry potter vs read harry potter'>this query</a> to get an idea 
         </div>
       </div>
     );
