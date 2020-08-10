@@ -14,9 +14,6 @@ class QueryForm extends React.Component {
     this.state = {query: urlParams.get('query') || ''};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    if (this.state.query) {
-      this.handleSubmit(new Event('submit'));
-    }
   }
 
   handleSubmit(event) {
@@ -49,6 +46,12 @@ class QueryForm extends React.Component {
       (error) => {console.log(error)}
     );
     event.preventDefault();
+  }
+
+  componentDidMount() {
+    if (this.state.query) {
+      this.handleSubmit(new Event('submit'));
+    }
   }
 
   handleChange(event) {
