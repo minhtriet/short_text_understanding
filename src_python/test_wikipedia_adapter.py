@@ -8,3 +8,4 @@ def test_work():
 def test_work_v2():
     n = WikidataAdapter_V2('apple')
     assert n.status == 200
+
