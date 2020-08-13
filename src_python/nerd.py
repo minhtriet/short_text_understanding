@@ -8,9 +8,9 @@ import wikidata_adapter_v2
 
 from base_adapter import Entity
 from flair.models import SequenceTagger
-from flair.data import Sentence
+from flair.data import Sentence, Token
 from typing import List
-from flair.embeddings import WordEmbeddings, FlairEmbeddings
+from flair.embeddings import FlairEmbeddings, PooledFlairEmbeddings, StackedEmbeddings
 from scipy import special
 import numpy as np
 
@@ -25,6 +25,13 @@ ADJ_TAG = 'ADJ'
 tagger = SequenceTagger.load('upos-fast')
 flair_embedding_forward = FlairEmbeddings('news-forward')
 flair_embedding_backward = FlairEmbeddings('news-backward')
+
+embedding_types = [
+    PooledFlairEmbeddings('news-forward', pooling='min'),
+    PooledFlairEmbeddings('news-backward', pooling='min'),
+]
+embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
+
 
 logger = logging.getLogger('app')
 logger.setLevel(logging.DEBUG)
@@ -120,6 +127,7 @@ def _longest_entity(sentence, begin) -> int:
     while high >= low: 
         mid = (high + low) // 2
         test_text = wikidata_adapter_v2.WikidataAdapter_V2(sentence[low:high])
+        import pdb; pdb.set_trace()
         if test_text.get_entities[0].title == ' '.join(sentence[low:high]):
             best_high = mid
             best_text = test_text
