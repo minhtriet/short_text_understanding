@@ -170,20 +170,19 @@ def disambiguate_v2(query) -> List[Entity]:
                 succeeding_part = []
                 if next_index < trailing:
                     succeeding_part = sentence[next_index+1:trailing+1]
-                # use words around that subtext to gain more data for likelihood
-                if possible_entities:
-                    # get possible entities
-                    similarities = []
-                    if preceding_part or succeeding_part:
-                        # reduce two arrays of embedding to a number of maximum similarity
-                        for prob in possible_entities:
-                            desc = Sentence(prob.description)
-                            embeddings.embed(desc)
-                            best_sim = max(sentence_similarity(desc, preceding_part), sentence_similarity(desc, succeeding_part))
-                            similarities.append(best_sim)
-                        most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
-                    else:
-                        most_likely_index = np.argmax([entity.probability for entity in possible_entities])
+                # get possible entities
+                similarities = []
+                if preceding_part or succeeding_part:
+                    # reduce two arrays of embedding to a number of maximum similarity
+                    _, possible_entities = entity.to_entity_list()
+                    for possible_entity in possible_entities:
+                        desc = Sentence(possible_entity.description)
+                        embeddings.embed(desc)
+                        best_sim = sentence_similarity(desc, preceding_part + succeeding_part)
+                        similarities.append(best_sim)
+                    most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
+                else:
+                    most_likely_index = np.argmax([entity.probability for entity in possible_entities])
                 possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
                 possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
                 most_likely_entities.append(possible_entities[most_likely_index])

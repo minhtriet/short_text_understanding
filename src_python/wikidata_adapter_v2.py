@@ -21,19 +21,11 @@ class WikidataAdapter_V2(wikidata_adapter.WikidataAdapter):
 
     def __new__(cls, text):
         obj = super(WikidataAdapter_V2, cls).__new__(cls)
-        obj.status, obj._json = asyncio.run(WikidataAdapter_V2.get_info(WikidataAdapter_V2.search_dict, {'search': text}))
-        obj._json = obj._json['search']
-        if not obj._json or not obj._json[0]['label'].lower().startswith(text):
+        obj.status, obj.json = asyncio.run(WikidataAdapter_V2.get_info(WikidataAdapter_V2.search_dict, {'search': text}))
+        if not obj.json['search'] or not obj.json['search'][0]['label'].lower().startswith(text):
             return
         return obj
     
     def __init__(self, entity_name, result_number=MAX_RESULTS_NUMBER):
         self.entity = entity_name
-
-
-    async def _get_probabilities(self):
-        json_probabilities = [WikidataAdapter_V2.get_info(WikidataAdapter_V2.claims_pagelink_dict,
-                                                       {'gsrsearch': json_entity['title']}) for json_entity in self.json['search']]
-        results = await asyncio.gather(*json_probabilities)
-        return results
 

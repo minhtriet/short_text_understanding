@@ -20,6 +20,9 @@ class WikidataAdapter(base_adapter.EntityDatabase):
                             'gsrlimit': 1}
 
     async def get_info(params_dict, search_key_value):
+        """
+        Make requests to wikidata given params_dict and search_key_value
+        """
         params = urllib.parse.urlencode({**params_dict, **search_key_value})
         async with aiohttp.ClientSession() as session:
             async with session.get(WikidataAdapter.base_url % params, ssl=False) as response:
