@@ -116,6 +116,10 @@ def disambiguate(query) -> List[Entity]:
     logging.log(logging.DEBUG, most_likely_entities)
     return most_likely_entities if most_likely_entities else None
 
+
+def _join_text_flair(l: List[Token]) -> str:
+    return ' '.join(list(map(lambda x: x.text, l)))
+
 def _longest_entity(sentence, begin) -> int:
     """
     What is the longest consecutive text from `begin` that is also an entity?
@@ -126,9 +130,8 @@ def _longest_entity(sentence, begin) -> int:
     best_text = None
     while high >= low: 
         mid = (high + low) // 2
-        test_text = wikidata_adapter_v2.WikidataAdapter_V2(sentence[low:high])
-        import pdb; pdb.set_trace()
-        if test_text.get_entities[0].title == ' '.join(sentence[low:high]):
+        test_text = wikidata_adapter_v2.WikidataAdapter_V2(_join_text_flair(sentence[begin:mid]))
+        if test_text:
             best_high = mid
             best_text = test_text
             low = mid + 1
@@ -140,6 +143,7 @@ def _longest_entity(sentence, begin) -> int:
 def disambiguate_v2(query) -> List[Entity]:
     sentence = Sentence(query)
     tagger.predict(sentence)
+    embeded_sentence = False
     logging.log(logging.DEBUG, sentence)
     most_likely_entities = []
     trailing = 0
@@ -151,20 +155,22 @@ def disambiguate_v2(query) -> List[Entity]:
             next_index, entity = _longest_entity(sentence, token_index)
             if entity:
                 # found an entity!!!
+                # embed the sentences in two ways, forward and backward
+                if not embeded_sentence:
+                    embeddings.embed(setence)
+                    embeded_sentence = True
                 # now what are the trailing tokens?
                 # the var `trailing` is from previous entity!
                 preceding_part = None
                 if trailing < token_index:
-                    preceding_part = Sentence(' '.join(list(map(lambda x: x.text, sentence[trailing:token_index]))))
-                    flair_embedding_forward.embed(preceding_part)
+                    preceding_part = sentence[trailing:token_index]
                 # now update `trailing`
                 for trailing in range(next_index + 1, len(sentence)):
                     if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
                         break
                 succeeding_part = None
                 if next_index < trailing:
-                    succeeding_part = Sentence(' '.join(list(map(lambda x: x.text, sentence[next_index+1:trailing+1]))))
-                    flair_embedding_backward.embed(succeeding_part)
+                    succeeding_part = sentence[next_index+1:trailing+1]
                 # use words around that subtext to gain more data for likelihood
                 if possible_entities:
                     # get possible entities
@@ -173,7 +179,7 @@ def disambiguate_v2(query) -> List[Entity]:
                         # reduce two arrays of embedding to a number of maximum similarity
                         for prob in possible_entities:
                             desc = Sentence(prob.description)
-                            flair_embedding_forward.embed(desc)
+                            embeddings.embed(desc)
                             best_sim = max(sentence_similarity(desc, preceding_part), sentence_similarity(desc, succeeding_part))
                             similarities.append(best_sim)
                         most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
@@ -187,4 +193,4 @@ def disambiguate_v2(query) -> List[Entity]:
             token_index += 1
     logging.log(logging.DEBUG, most_likely_entities)
     return most_likely_entities if most_likely_entities else None
-
+      
