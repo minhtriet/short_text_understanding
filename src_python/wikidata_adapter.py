@@ -43,23 +43,23 @@ class WikidataAdapter(base_adapter.EntityDatabase):
 
     def to_entity_list(self):
         """
-
+        From the name of the entity, find all possible entity with same name, but different meanings, as well as their count
         Returns
         -------
         total claims
         detailed dict
         """
-        result = asyncio.run(self._get_probabilities())
-        if result:  # something is found on wikidata
-            statuses, responses = zip(*result)
+        results = asyncio.run(self._get_probabilities())
+        if results:  # something is found on wikidata
+            statuses, responses = zip(*results)
             responses_dict = [response['query']['pages'].values() for response in responses]
             flattened_responses = list(itertools.chain.from_iterable(responses_dict))
             probabilities_dict = {}
             for flattened_response in flattened_responses:
                 probabilities_dict[flattened_response['title']] = float(flattened_response['pageprops']['wb-claims']) + float(flattened_response['pageprops']['wb-sitelinks'])
             denominator = sum([x for x in probabilities_dict.values()])
-            entities = [base_adapter.Entity(result['title'],
-                                            float(probabilities_dict[result['title']]) / denominator,
-                                            result['snippet']) for result in self.json['search'] if result['snippet']]
+            entities = [base_adapter.Entity(entity['title'],
+                                            float(probabilities_dict[entity['title']]) / denominator,
+                                            entity['description']) for entity in self.json['search']]
             return denominator, entities
         return 0, None

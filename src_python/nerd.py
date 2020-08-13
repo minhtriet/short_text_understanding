@@ -96,8 +96,8 @@ def disambiguate(query) -> List[Entity]:
                 similarities = []
                 if preceding_part or succeeding_part:
                     # reduce two arrays of embedding to a number of maximum similarity
-                    for prob in possible_entities:
-                        desc = Sentence(prob.description)
+                    for entity in possible_entities:
+                        desc = Sentence(entity.description)
                         flair_embedding_forward.embed(desc)
                         best_sim = max(sentence_similarity(desc, preceding_part), sentence_similarity(desc, succeeding_part))
                         similarities.append(best_sim)
@@ -137,7 +137,7 @@ def _longest_entity(sentence, begin) -> int:
             low = mid + 1
         else:
             high = mid - 1
-    return best_high, test_text
+    return best_high - 1, test_text  # best_high - 1 because mid is used as end of a slice, rather than an index
 
 
 def disambiguate_v2(query) -> List[Entity]:
@@ -148,7 +148,6 @@ def disambiguate_v2(query) -> List[Entity]:
     most_likely_entities = []
     trailing = 0
     token_index = 0
-    total_prob, possible_entities = 0, None
     while token_index < len(sentence):
         token = sentence[token_index]
         if token.get_tag('pos').value in [NOUN_TAG, PROPN_TAG]:
@@ -157,18 +156,18 @@ def disambiguate_v2(query) -> List[Entity]:
                 # found an entity!!!
                 # embed the sentences in two ways, forward and backward
                 if not embeded_sentence:
-                    embeddings.embed(setence)
+                    embeddings.embed(sentence)
                     embeded_sentence = True
                 # now what are the trailing tokens?
                 # the var `trailing` is from previous entity!
-                preceding_part = None
+                preceding_part = []
                 if trailing < token_index:
                     preceding_part = sentence[trailing:token_index]
                 # now update `trailing`
                 for trailing in range(next_index + 1, len(sentence)):
                     if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
                         break
-                succeeding_part = None
+                succeeding_part = []
                 if next_index < trailing:
                     succeeding_part = sentence[next_index+1:trailing+1]
                 # use words around that subtext to gain more data for likelihood
@@ -186,7 +185,7 @@ def disambiguate_v2(query) -> List[Entity]:
                     else:
                         most_likely_index = np.argmax([entity.probability for entity in possible_entities])
                 possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
-                possible_entities[most_likely_index].end_pos = sentence[best_config[1]].end_pos
+                possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
                 most_likely_entities.append(possible_entities[most_likely_index])
                 token_index = trailing + 1
         else:
