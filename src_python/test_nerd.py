@@ -7,6 +7,7 @@ import pytest
       ('thick harry potter book', 1, 'Q3244512'),   # Q3244512, not Q8337, because thick series book seems nonsense
       ("watch harry potter", 1, "Q216930"),
       ('rage against the machine', 1, 'Q72092'),])
+      ('green day', 1, 'Q72092'),])
 def test_one_entity(test_input, expected_len, expected_entity):
     result = nerd.disambiguate(test_input)
     if not expected_entity:

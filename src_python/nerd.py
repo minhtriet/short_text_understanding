@@ -34,7 +34,6 @@ embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
 
 
 logger = logging.getLogger('app')
-logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
@@ -146,49 +145,49 @@ def disambiguate_v2(query) -> List[Entity]:
     embeded_sentence = False
     logging.log(logging.DEBUG, sentence)
     most_likely_entities = []
-    trailing = 0
+    trailing = 0  # the part that is after an entity but contribute to the understanding of the entity
     token_index = 0
     while token_index < len(sentence):
         token = sentence[token_index]
-        if token.get_tag('pos').value in [NOUN_TAG, PROPN_TAG]:
-            next_index, entity = _longest_entity(sentence, token_index)
-            if entity:
-                # found an entity!!!
-                # embed the sentences in two ways, forward and backward
-                if not embeded_sentence:
-                    embeddings.embed(sentence)
-                    embeded_sentence = True
-                # now what are the trailing tokens?
-                # the var `trailing` is from previous entity!
-                preceding_part = []
-                if trailing < token_index:
-                    preceding_part = sentence[trailing:token_index]
-                # now update `trailing`
-                for trailing in range(next_index + 1, len(sentence)):
-                    if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
-                        break
-                succeeding_part = []
-                if next_index < trailing:
-                    succeeding_part = sentence[next_index+1:trailing+1]
-                # get possible entities
-                similarities = []
-                if preceding_part or succeeding_part:
-                    # reduce two arrays of embedding to a number of maximum similarity
-                    _, possible_entities = entity.to_entity_list()
-                    for possible_entity in possible_entities:
-                        desc = Sentence(possible_entity.description)
-                        embeddings.embed(desc)
-                        best_sim = sentence_similarity(desc, preceding_part + succeeding_part)
-                        similarities.append(best_sim)
-                    most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
-                else:
-                    most_likely_index = np.argmax([entity.probability for entity in possible_entities])
-                possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
-                possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
-                most_likely_entities.append(possible_entities[most_likely_index])
-                token_index = trailing + 1
+        next_index, entity = _longest_entity(sentence, token_index)
+        if entity:
+            # found an entity!!!
+            # embed the sentences in two ways, forward and backward
+            if not embeded_sentence:
+                embeddings.embed(sentence)
+                embeded_sentence = True
+            # now what are the trailing tokens?
+            # the var `trailing` is from previous entity!
+            preceding_part = []
+            if trailing < token_index:
+                preceding_part = sentence[trailing:token_index]
+            # now update `trailing`
+            for trailing in range(next_index + 1, len(sentence)):
+                if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
+                    break
+            succeeding_part = []
+            if next_index < trailing:
+                succeeding_part = sentence[next_index+1:trailing+1]
+            # get possible entities
+            similarities = []
+            _, possible_entities = entity.to_entity_list()
+            if preceding_part or succeeding_part:
+                # reduce two arrays of embedding to a number of maximum similarity
+                for possible_entity in possible_entities:
+                    desc = Sentence(possible_entity.description)
+                    embeddings.embed(desc)
+                    best_sim = sentence_similarity(desc, preceding_part + succeeding_part)
+                    similarities.append(best_sim)
+                most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
+            else:
+                most_likely_index = np.argmax([entity.probability for entity in possible_entities])
+            possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
+            possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
+            most_likely_entities.append(possible_entities[most_likely_index])
+            token_index = max(trailing, next_index) + 1
         else:
             token_index += 1
+        print(token_index)
     logging.log(logging.DEBUG, most_likely_entities)
     return most_likely_entities if most_likely_entities else None
       
