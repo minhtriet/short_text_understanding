@@ -13,7 +13,8 @@ from typing import List
 from flair.embeddings import FlairEmbeddings, PooledFlairEmbeddings, StackedEmbeddings
 from scipy import special
 import numpy as np
-
+from nltk.corpus import stopwords
+from flair.embeddings import WordEmbeddings
 import sys
 import logging
 
@@ -23,9 +24,9 @@ VERB_TAG = 'VERB'
 ADJ_TAG = 'ADJ'
 
 tagger = SequenceTagger.load('upos-fast')
+glove_embedding = WordEmbeddings('glove')
 flair_embedding_forward = FlairEmbeddings('news-forward')
 flair_embedding_backward = FlairEmbeddings('news-backward')
-
 embedding_types = [
     PooledFlairEmbeddings('news-forward', pooling='min'),
     PooledFlairEmbeddings('news-backward', pooling='min'),
@@ -38,12 +39,14 @@ handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
+eng_stopwords = set(stopwords.words('english'))
 
 def sentence_similarity(sent_1, sent_2) -> float:
   if len(sent_1) == 0 or len(sent_2) == 0:
     return 0
   return max([np.dot(token_prime.embedding, token.embedding) 
-              for token in sent_1 for token_prime in sent_2])
+              for token in sent_1 for token_prime in sent_2 
+              if token.text not in eng_stopwords and token_prime.text not in eng_stopwords ])
 
 
 def disambiguate(query) -> List[Entity]:
