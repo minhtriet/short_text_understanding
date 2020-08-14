@@ -22,7 +22,7 @@ class WikidataAdapter_V2(wikidata_adapter.WikidataAdapter):
     def __new__(cls, text):
         obj = super(WikidataAdapter_V2, cls).__new__(cls)
         obj.status, obj.json = asyncio.run(WikidataAdapter_V2.get_info(WikidataAdapter_V2.search_dict, {'search': text}))
-        if not obj.json['search'] or not obj.json['search'][0]['label'].lower().startswith(text):
+        if 'search' not in obj.json or not obj.json['search'][0]['label'].lower().startswith(text):
             return
         return obj
     
