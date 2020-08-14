@@ -139,7 +139,7 @@ def _longest_entity(sentence, begin) -> int:
             low = mid + 1
         else:
             high = mid - 1
-    return best_high - 1, test_text  # best_high - 1 because mid is used as end of a slice, rather than an index
+    return best_high - 1, best_text  # best_high - 1 because mid is used as end of a slice, rather than an index
 
 
 def disambiguate_v2(query) -> List[Entity]:
@@ -152,12 +152,15 @@ def disambiguate_v2(query) -> List[Entity]:
     token_index = 0
     while token_index < len(sentence):
         token = sentence[token_index]
+        if token.get_tag('pos').value == VERB_TAG:
+            token_index += 1
+            continue
         next_index, entity = _longest_entity(sentence, token_index)
         if entity:
             # found an entity!!!
             # embed the sentences in two ways, forward and backward
             if not embeded_sentence:
-                embeddings.embed(sentence)
+                glove_embedding.embed(sentence)
                 embeded_sentence = True
             # now what are the trailing tokens?
             # the var `trailing` is from previous entity!
