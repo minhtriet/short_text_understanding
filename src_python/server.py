@@ -17,7 +17,7 @@ def name_entity_disambiguate():
 
 @app.route('/api/v2', methods=['GET'])
 def name_entity_disambiguate_v2():
-    entities = nerd.disambiguate_v2(request.args.get('query'))
+    entities = nerd.disambiguate_v2(request.args.get('query').lower())
     if entities:
         return jsonify(entities)
     return jsonify({"error": "no entities"})

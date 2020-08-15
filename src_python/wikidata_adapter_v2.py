@@ -1,14 +1,14 @@
 import asyncio
-
+import itertools
 import wikidata_adapter
-
+import base_adapter
 
 # https://www.wikidata.org/w/api.php?action=query&format=json&prop=pageprops&generator=search&ppprop=wb-claims|wb-sitelinks&gsrsearch=Q89&gsrlimit=1
 # https://www.wikidata.org/w/api.php?action=wbsearchentities&search=apple&language=en&limit=20&continue=0&format=json&uselang=en&type=item&origin=*
 # https://www.wikidata.org/w/api.php?action=query&list=search&srsearch=harry%20potter&format=json&srlimit=4
 class WikidataAdapter_V2(wikidata_adapter.WikidataAdapter):
 
-    MAX_RESULTS_NUMBER = wikidata_adapter.WikidataAdapter.MAX_RESULTS_NUMBER
+    MAX_RESULTS_NUMBER = 20
 
     search_dict = {'action': 'wbsearchentities',
                    'language': 'en',

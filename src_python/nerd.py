@@ -170,6 +170,11 @@ def disambiguate_v2(query) -> List[Entity]:
                 flair_embedding_forward.embed(preceding_part)
             # now update `trailing`
             succeeding_part = []
+            trailing = next_index + 1
+            while trailing < len(sentence):  # use while loop to solve the case when noun is at the end of the query
+                if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG] or sentence[trailing].text in eng_stopwords:
+                    break
+                trailing += 1
             if next_index < trailing:
                 succeeding_part = Sentence(_join_text_flair(sentence[next_index+1:trailing]))
                 flair_embedding_backward.embed(succeeding_part)
