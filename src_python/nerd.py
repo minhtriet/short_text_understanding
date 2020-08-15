@@ -137,7 +137,7 @@ def _longest_entity(sentence, begin) -> int:
     best_high = -1
     best_text = None
     while high >= low: 
-        mid = (high + low) // 2
+        mid = int(math.ceil((high + low)*0.5))
         test_text = wikidata_adapter_v2.WikidataAdapter_V2(_join_text_flair(sentence[begin:mid]))
         if test_text:
             best_high = mid
