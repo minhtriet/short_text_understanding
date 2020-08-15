@@ -164,38 +164,36 @@ def disambiguate_v2(query) -> List[Entity]:
         next_index, entity = _longest_entity(sentence, token_index)
         if entity:
             # found an entity!!!
-            # embed the sentences in two ways, forward and backward
-            if not embeded_sentence:
-                glove_embedding.embed(sentence)
-                embeded_sentence = True
-            # now what are the trailing tokens?
-            # the var `trailing` is from previous entity!
             preceding_part = []
             if trailing < token_index:
-                preceding_part = sentence[trailing:token_index]
+                preceding_part = Sentence(_join_text_flair(sentence[trailing:token_index]))
+                flair_embedding_forward.embed(preceding_part)
             # now update `trailing`
-            for trailing in range(next_index + 1, len(sentence)):
-                if sentence[trailing].get_tag('pos').value in [ADJ_TAG, VERB_TAG]:
-                    break
             succeeding_part = []
             if next_index < trailing:
-                succeeding_part = sentence[next_index+1:trailing+1]
+                succeeding_part = Sentence(_join_text_flair(sentence[next_index+1:trailing]))
+                flair_embedding_backward.embed(succeeding_part)
             # get possible entities
             similarities = []
             _, possible_entities = entity.to_entity_list()
-            if preceding_part or succeeding_part:
-                # reduce two arrays of embedding to a number of maximum similarity
-                for possible_entity in possible_entities:
-                    desc = Sentence(possible_entity.description)
-                    embeddings.embed(desc)
-                    best_sim = sentence_similarity(desc, preceding_part + succeeding_part)
-                    similarities.append(best_sim)
-                most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
-            else:
-                most_likely_index = np.argmax([entity.probability for entity in possible_entities])
-            possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
-            possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
-            most_likely_entities.append(possible_entities[most_likely_index])
+            if possible_entities:
+                if preceding_part or succeeding_part:
+                    # reduce two arrays of embedding to a number of maximum similarity
+                    for possible_entity in possible_entities:
+                        desc = Sentence(possible_entity.description)
+                        flair_embedding_forward.embed(desc)
+                        back_desc = Sentence(possible_entity.description)
+                        flair_embedding_backward.embed(back_desc)
+                        best_sim = max([sentence_similarity(desc[:4], preceding_part), sentence_similarity(back_desc[:4], succeeding_part)])
+                        #print(best_sim)
+                        similarities.append(best_sim)
+                        #print(desc, preceding_part + succeeding_part)
+                    most_likely_index = np.argmax(similarities)   # bayes rule seems does not work
+                else:
+                    most_likely_index = np.argmax([entity.probability for entity in possible_entities])
+                possible_entities[most_likely_index].start_pos = sentence[token_index].start_pos
+                possible_entities[most_likely_index].end_pos = sentence[next_index].end_pos
+                most_likely_entities.append(possible_entities[most_likely_index])
             token_index = max(trailing, next_index) + 1
         else:
             token_index += 1
