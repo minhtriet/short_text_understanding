@@ -103,9 +103,11 @@ def disambiguate(query) -> List[Entity]:
                 if preceding_part or succeeding_part:
                     # reduce two arrays of embedding to a number of maximum similarity
                     for entity in possible_entities:
-                        desc = Sentence(entity.description)
-                        flair_embedding_forward.embed(desc)
-                        best_sim = max(sentence_similarity(desc, preceding_part), sentence_similarity(desc, succeeding_part))
+                        desc_1 = Sentence(entity.description)
+                        flair_embedding_backward.embed(desc_1)
+                        desc_2 = Sentence(entity.description)
+                        flair_embedding_forward.embed(desc_2)
+                        best_sim = max(sentence_similarity(desc_1, preceding_part), sentence_similarity(desc_2, succeeding_part))
                         similarities.append(best_sim)
                     similarities = special.softmax(similarities)
                     # bayes rule
