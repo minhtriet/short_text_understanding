@@ -13,7 +13,6 @@ from typing import List
 from flair.embeddings import FlairEmbeddings, PooledFlairEmbeddings, StackedEmbeddings
 from scipy import special
 import numpy as np
-from nltk.corpus import stopwords
 from flair.embeddings import WordEmbeddings
 import sys
 import logging
