@@ -7,11 +7,12 @@ services:
        expose:
            - 5000
    nginx:
-       build: ./src_python/nginx
+       build: ./nginx
        ports:
            - 80:80
        depends_on:
            - ner
+           - react
    react:
        build: .
        expose:
