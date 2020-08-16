@@ -1,0 +1,8 @@
+.git*
+.DS_Store*
+LICENSE
+README
+venv
+src_python
+Dockerfile
+node_modules
