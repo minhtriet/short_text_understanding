@@ -15,5 +15,6 @@ services:
            - react
    react:
        build: .
+       command: npm run start
        expose:
            - 3000
