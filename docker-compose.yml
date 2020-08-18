@@ -1,20 +1,10 @@
 version: '3.8'
 
 services:
-   ner:
-       build: ./src_python
-       command: gunicorn --bind 0.0.0.0:5000 server:app
-       expose:
-           - 5000
-   nginx:
-       build: ./nginx
+   frontend:
+       build: 
+           context: .
+           dockerfile: Dockerfile
        ports:
-           - 80:80
-       depends_on:
-           - ner
-           - react
-   react:
-       build: .
-       command: npm run start
-       expose:
-           - 3000
+           - 3001:3000
+       stdin_open: true
