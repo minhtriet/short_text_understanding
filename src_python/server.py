@@ -21,3 +21,7 @@ def name_entity_disambiguate_v2():
     if entities:
         return jsonify(entities)
     return jsonify({"error": "no entities"})
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
