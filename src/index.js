@@ -64,11 +64,13 @@ class QueryForm extends React.Component {
     return (
       <div>
         <form onSubmit={this.handleSubmit} method="GET">
-              <input maxlength="40" name="query" id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
+          <div className="row">
+            <input maxLength="40" name="query" className='eight columns offset-by-two' id='textbox_query' value={this.state.query} onChange={this.handleChange} type='text' autoFocus/>
+          </div>
+          <div className="eight columns offset-by-two" id="result">
+            Try <a href='/?query=watch harry potter vs read harry potter'>this query</a> to get an idea 
+          </div>
         </form>
-        <div id="result">
-          Try <a href='/?query=watch harry potter vs read harry potter'>this query</a> to get an idea 
-        </div>
       </div>
     );
   }
