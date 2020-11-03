@@ -45,7 +45,7 @@ class QueryForm extends React.Component {
       },
       (error) => {console.log(error)}
     );
-    const loading_dom = e('div', {className: 'centered lds-ellipsis'}, [e('div'), e('div'), e('div')]);
+    const loading_dom = e('div', {className: 'lds-ellipsis'}, [e('div'), e('div'), e('div')]);
     ReactDOM.render(loading_dom, document.getElementById('result'));
     event.preventDefault();
   }
